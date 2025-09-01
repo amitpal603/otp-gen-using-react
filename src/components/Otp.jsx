@@ -1,61 +1,74 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import toast from "react-hot-toast";
+import { motion } from "framer-motion";
 
 function Otp() {
   const [otp, setOtp] = useState("");
-  const otpRef = useRef(null)
+  const otpRef = useRef(null);
 
+  // OTP Generator
   const genOtp = (size) => {
     let otp = "";
-    let pass;
-    for (let i = 1; i <= size; i++) {
-      let gen = Math.floor(Math.random() * i +1);
-      pass = otp += gen;
+    for (let i = 0; i < size; i++) {
+      let gen = Math.floor(Math.random() * 10); // random digit 0–9
+      otp += gen;
     }
-
-    setOtp(pass);
+    setOtp(otp);
     toast.success("OTP Generated Successfully");
   };
 
+  // Copy Handler
   const HandleCopy = () => {
-   if(otp){
-    window.navigator.clipboard?.readText(otp)
-   otpRef.current?.select()
-    toast.success('Copied')
-   }
-   else{
-    toast.error('Please Generate OTP')
-   }
-  }
-  return (
-    <div className="h-screen bg-gray-500 flex justify-center items-center flex-col gap-20">
-      <div className="h-40 w-150 border-2 shadow-lg shadow-purple-500 rounded-md flex justify-center gap-3 flex-col">
-        <h1 className="text-center mb-7 text-2xl font-bold">OTP GENERATOR</h1>
+    if (otp) {
+      navigator.clipboard.writeText(otp);
+      toast.success("Copied");
+    } else {
+      toast.error("Please Generate OTP");
+    }
+  };
 
-        <div className="flex justify-center gap-7">
+  return (
+    <div className="h-screen bg-gradient-to-br from-purple-500 to-gray-800 flex justify-center items-center px-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8, y: 50 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="w-full max-w-md border-2 border-purple-400 shadow-lg shadow-purple-700 rounded-2xl p-6 bg-white flex flex-col gap-6"
+      >
+        <h1 className="text-center text-2xl sm:text-3xl font-bold text-purple-700">
+          OTP GENERATOR
+        </h1>
+
+        {/* Input + Copy Button */}
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
           <input
             type="text"
-            readOnly={true}
+            readOnly
             value={otp}
             ref={otpRef}
-            className="outline-none border-2 h-10 w-40 rounded-md pl-3 text-white border-black"
+            className="outline-none border-2 h-12 w-full sm:w-48 rounded-md px-3 text-black border-gray-400 text-lg text-center"
           />
-          <button
-          onClick={HandleCopy}
-          className=" hover:cursor-pointer h-10 w-30 bg-purple-400 shadow-lg shadow-purple-500 rounded-md hover:bg-purple-800">
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            whileHover={{ scale: 1.05 }}
+            onClick={HandleCopy}
+            className="h-12 w-full sm:w-28 bg-purple-500 text-white font-semibold rounded-md shadow-md hover:bg-purple-700 transition-colors"
+          >
             Copy
-          </button>
+          </motion.button>
         </div>
-      </div>
 
-      <button
-        onClick={() => genOtp(6)}
-        className=" transition-transform hover:scale-105 duration-300 hover:cursor-pointer bg-purple-400 px-9 py-3 rounded-md shadow-lg shadow-purple-500 hover:bg-purple-700"
-      >
-        OTP GEN
-      </button>
+        {/* Generate Button */}
+        <motion.button
+          whileTap={{ scale: 0.95 }}
+          whileHover={{ scale: 1.05 }}
+          onClick={() => genOtp(6)}
+          className="w-full bg-purple-600 text-white font-semibold py-3 rounded-md shadow-lg hover:bg-purple-800 transition-colors"
+        >
+          Generate OTP
+        </motion.button>
+      </motion.div>
     </div>
   );
 }
-
 export default Otp;
